@@ -23,38 +23,43 @@ public:
 	}
 	void viewmove(float x_ang, float y_ang);
 
-	const float speed = 1;
-	void go_forward();
-	void go_backward();
-	void go_left();
-	void go_right();
+	void go_forward(float speed);
+	void go_backward(float speed);
+	void go_left(float speed);
+	void go_right(float speed);
+};
+
+enum Direction {
+	W,//前
+	A,//左
+	S,//后
+	D//右
 };
 
 class Action {
 public:	
 	Figure player;//角色
-	int mouse_x, mouse_y;	//鼠标坐标
-	bool MouseIn;			//鼠标是否在窗口内
-
-
-	Action() {};
-	Action(float x, float y, float z, float vx, float vy, float vr) :player(x, y, z,vx ,vy ,vr) {
-		mouse_x = 0; mouse_y = 0; MouseIn = 1;
+	int window_h, window_w;	//鼠标坐标
+	//速度
+	const float maxSpeed ,Speed_a;
+	float nowSpeed;
+	//方向
+	bool dir_w, dir_a, dir_s, dir_d;
+	//跳跃
+	//y = -x^2 +x
+	const float jmp_g;
+	float jmp_x;
+	Action(float x, float y, float z, float vx, float vy, float vr) 
+		:player(x, y, z,vx ,vy ,vr),maxSpeed(0.005),Speed_a(0.005),jmp_g(0.001)
+	{
+		nowSpeed = 0.0; dir_w = dir_a = dir_s = dir_d = 0;
 	}
-	void MouseAction(int x, int y);
-	void KeyAction(unsigned char k, int x, int y);
-	/*
+	void ViewAction(int x, int y);
+	void setMoveDir(Direction dir, bool b);
+	void MoveAction();
+	void jmp();
+	//void KeyAction(unsigned char k, int x, int y);
 	
-	{
-
-	}
-
-	//GLUT_LEFT      鼠标离开窗口
-	//GLUT_ENTERED  鼠标进入窗口
-	void MouseEntry(int state)
-	{
-
-	}*/
 
 };
 

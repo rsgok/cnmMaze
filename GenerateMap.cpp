@@ -65,9 +65,16 @@ MazeMap::MazeMap() : mazeModelSize{ 10,10,10 }
 	for (int i = 0; i < sizeY * sizeNum; ++i)
 		map[0][i] = map[sizeX - 1][i] = -1;
 }
+MazeMap::~MazeMap()
+{
+	for (int i = 0; i < sizeX; ++i)
+		delete map[i];
+	delete map;
+}
 
 
-
+//for test
+/*
 int main()
 {
 	MazeMap test;
@@ -80,13 +87,7 @@ int main()
 	}
 	system("pause");
 }
-MazeMap::~MazeMap()
-{
-	for (int i = 0; i < sizeX; ++i)
-		delete map[i];
-	delete map;
-}
-
+*/
 
 //·ÏÆú
 /*

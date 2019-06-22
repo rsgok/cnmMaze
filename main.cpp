@@ -4,25 +4,70 @@
 #include"Action.h"
 
 
+//窗口
+int MainWindow;//主窗口
+int MapWindow; //地图窗口
+//行为控制
+Action act(1, 1, 0, 1, 1, 5);
+//回调函数
 void idle()
 {
 	glutPostRedisplay();
 }
-//控制动作
-Action act(0,0,0,0,0,5);
+
 void  MouseAction(int x, int y)
 {
-	act.MouseAction(x, y);
+	glutSetWindow(MainWindow);
+	act.ViewAction(x, y);
 }
 
 void KeyAction(unsigned char k, int x, int y)
 {
-	act.KeyAction(k, x, y);
+	switch (k)
+	{
+	case 'w':
+		act.setMoveDir(Direction::W,1);
+		break;
+	case 's':
+		act.setMoveDir(Direction::S, 1);
+		break;
+	case 'a':
+		act.setMoveDir(Direction::A, 1);
+		break;
+	case 'd':
+		act.setMoveDir(Direction::D, 1);
+		break;
+	case ' ':
+		act.jmp();
+		break;
+	case 27:
+		exit(0);
+/*	case 'm':
+		MapChange();
+		break;*/
+	}
 }
-////////////////////////////////////////////////////////for test
+void KeyUpAction(unsigned char k, int x, int y)
+{
+	switch (k)
+	{
+	case 'w':
+		act.setMoveDir(Direction::W, 0);
+		break;
+	case 's':
+		act.setMoveDir(Direction::S, 0);
+		break;
+	case 'a':
+		act.setMoveDir(Direction::A, 0);
+		break;
+	case 'd':
+		act.setMoveDir(Direction::D, 0);
+		break;
 
-int wHeight = 0;
-int wWidth = 0;
+	}
+}
+
+////////////////////////////////////////////////////////for test
 
 
 
@@ -42,21 +87,19 @@ void reshape(int width, int height)
 	{
 		height = 1;										// Making Height Equal One
 	}
-	wHeight = height;
-	wWidth = width;
-	updateView(wHeight, wWidth);
+	act.window_h = height;
+	act.window_w = width;
+	updateView(act.window_h, act.window_w);
 }
-
-
-float eye[] = { 0, 0, 8 };
-float center[] = { 0, 0, 0 };
 
 
 void redraw()
 {
-
+	glutSetWindow(MainWindow);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();									// Reset The Current Modelview Matrix
+	//移动处理 
+	act.MoveAction();
 
 	//视角设置
 	gluLookAt(  act.player.pos_vx(),  act.player.pos_vy(),act.player.pos_vz(),	//视点位置
@@ -73,7 +116,10 @@ void redraw()
 	glEnable(GL_LIGHT0);
 
 	//不动的方块，作为基准 
+	glPushMatrix();
+	glScalef(1.0, 1.0, 2.0);
 	glutSolidCube(1.0);
+	glPopMatrix();
 
 	//作为角色的方块
 	glPushMatrix();
@@ -83,8 +129,27 @@ void redraw()
 	glPopMatrix();
 
 	glutSwapBuffers();
+	
+
 }
 
+void redrawmap()
+{
+	glutSetWindow(MapWindow);
+	glClearColor((float)0x66/0xff, (float)0xcc/0xff, (float)0xff/0xff,0.1f); //将背景颜色设置为黑色和不透明 
+	glClear(GL_COLOR_BUFFER_BIT);         //清除颜色缓冲区（背景）
+
+	//绘制以原点 
+	glBegin(GL_QUADS);//为中心的红色1x1正方形;              //每组4个顶点组成一个四元组 
+	glColor3f(1.0f,0.0f,0.0f); //红色 
+	glVertex2f(-0.5f, -0.5f);    // x，y
+	glVertex2f(0.5f, - 0.5f);
+	glVertex2f(0.5f,0.5f);
+	glVertex2f(-0.5f, 0.5f);
+	glEnd();
+
+	glFlush();  //现在渲染
+}
 
 ////////////////////////////////////////////////////////
 
@@ -92,19 +157,30 @@ int main(int argc, char *argv[])
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
-	glutInitWindowSize(480, 480);
-	int windowHandle = glutCreateWindow("Simple GLUT App");
-
-
+	glutInitWindowPosition(0, 0);
+	glutInitWindowSize(1280,960);
+	MainWindow = glutCreateWindow("Simple GLUT App");
+	
+	//绘图
 	glutDisplayFunc(redraw);
 	glutReshapeFunc(reshape);
 
+	//鼠标
 	glutPassiveMotionFunc(MouseAction);
 	glutMotionFunc(&(MouseAction));
+	//键盘
+	glutSetKeyRepeat(GLUT_KEY_REPEAT_OFF);	
 	glutKeyboardFunc(KeyAction);
-/*	glutEntryFunc(MouseEntry);*/
+	glutKeyboardUpFunc(KeyUpAction);
 	glutIdleFunc(idle);
 
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH);
+	MapWindow = glutCreateSubWindow(MainWindow, 0,0, 200, 200);
+	glutDisplayFunc(redrawmap);
+
+
+	glutIdleFunc(idle);
 	glutMainLoop();
 	return 0;
 }
+
