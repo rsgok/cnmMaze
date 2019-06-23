@@ -10,23 +10,40 @@ public:
 	float x, y, z;		//角色位置
 	float vr, vx_ang, vy_ang;	//视点位置 x横向， y纵向
 	float face_ang;		//角色朝向位置
-
-
+	bool viewFlag;		//角色视角
 	//计算返回视点坐标位置
 	float pos_vx();
 	float pos_vy();
 	float pos_vz();
 
+	//构造函数
 	Figure(){};
-	Figure(float x, float y, float z, float vx, float vy, float vr):x(x),y(y),z(z),vx_ang(vx),vy_ang(vy),vr(vr) {
+	Figure(float x, float y, float z, float vx, float vy, float vr)
+		:x(x),y(y),z(z),vx_ang(vx),vy_ang(vy),vr(vr),viewFlag(0) {
 		face_ang = -vx_ang;
 	}
-	void viewmove(float x_ang, float y_ang);
 
+	//行为逻辑
+	void viewmove(float x_ang, float y_ang);
+	void setViewFlag();
 	void go_forward(float speed);
 	void go_backward(float speed);
 	void go_left(float speed);
 	void go_right(float speed);
+
+	//坐标转换
+	float D_x() { return y; }
+	float D_y() { return z; }
+	float D_z() { return x; }
+	float D_vx() { return pos_vy(); }
+	float D_vy() { return pos_vz(); }
+	float D_vz() { return pos_vx(); }
+
+	//人称标记
+	//第三人称 = 0
+	//第一人称 = 1
+	int CamFlag() { return viewFlag; }
+
 };
 
 enum Direction {

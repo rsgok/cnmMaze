@@ -41,6 +41,11 @@ void Figure::go_right(float speed)
 	x += speed * -cos(face_ang+acos(0));
 	y += speed * sin(face_ang+acos(0));
 }
+void Figure::setViewFlag()
+{
+	viewFlag = !viewFlag;
+}
+
 
 void FixMousePos(int x, int y)
 {

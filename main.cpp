@@ -43,6 +43,9 @@ void KeyAction(unsigned char k, int x, int y)
 	case 'd':
 		act.setMoveDir(Direction::D, 1);
 		break;
+	case 'v':
+		act.player.setViewFlag();
+		break;
 	case ' ':
 		act.jmp();
 		break;
@@ -118,9 +121,20 @@ void redrawMain(Action act,const MazeMap &Map)
 	
 
 	//视角设置
-	gluLookAt(  act.player.pos_vx(),  act.player.pos_vy(),act.player.pos_vz(),	//视点位置
-		act.player.x,  act.player.y,act.player.z,					//中心为人物
-		0, 0, 1);				// X轴向上
+	if (act.player.CamFlag())
+	{
+		gluLookAt(act.player.D_x() - act.player.D_vx()/5*2, act.player.D_y() - act.player.D_vy() / 5 * 2, act.player.D_z() - act.player.D_vz() / 5 * 2,	//视点位置
+			-2*act.player.D_vx(), -2*act.player.D_vy(), -2*act.player.D_vz(),					//中心为人物
+			0, 1, 0);				// X轴向上
+	}
+	else
+	{
+		gluLookAt(act.player.D_vx(), act.player.D_vy(), act.player.D_vz(),	//视点位置
+			act.player.D_x(), act.player.D_y(), act.player.D_z(),					//中心为人物
+			0, 1, 0);				// X轴向上
+	}
+
+	
 
 	//灯光
 	glEnable(GL_DEPTH_TEST);
@@ -139,8 +153,8 @@ void redrawMain(Action act,const MazeMap &Map)
 
 	//作为角色的方块
 	glPushMatrix();
-	glTranslated(act.player.x, act.player.y, act.player.z );//位置平移
-	glRotated(-act.player.face_ang/acos(-1)*180.0, 0, 0, 1);//旋转面向方向
+	glTranslated(act.player.D_x(), act.player.D_y(), act.player.D_z() );//位置平移
+	glRotated(-act.player.face_ang/acos(-1)*180.0, 0, 1, 0);//旋转面向方向
 	glutSolidCube(1.0);
 	glPopMatrix();
 
