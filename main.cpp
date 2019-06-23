@@ -10,7 +10,10 @@ using namespace std;
 
 //窗口
 int MainWindow;//主窗口
-int MapWindow; //地图窗口
+int MapWindow_min; //地图窗口(小
+int MapWindow_max; //地图窗口(大
+bool MapFlag = 0; //0:小地图  1:大地图
+
 //行为控制
 Action act(1.5, 1.5, 0, 0, 1, 5);
 //地图
@@ -26,7 +29,6 @@ void  MouseAction(int x, int y)
 	glutSetWindow(MainWindow);
 	act.ViewAction(x, y);
 }
-void WindowChange(int &WindowID, const Action &act, int topWindow);
 void KeyAction(unsigned char k, int x, int y)
 {
 	switch (k)
@@ -52,7 +54,7 @@ void KeyAction(unsigned char k, int x, int y)
 	case 27:
 		exit(0);
 	case 'm':
-		WindowChange(MapWindow,act,MainWindow);
+		MapFlag = ! MapFlag;
 		break;
 	}
 }
@@ -81,7 +83,7 @@ void MapKeyAction(unsigned char k, int x, int y)
 	switch (k)
 	{
 	case 'm':
-		WindowChange(MapWindow, act, MainWindow);
+		MapFlag = !MapFlag;
 		break;
 
 	}
@@ -91,25 +93,16 @@ void MapKeyAction(unsigned char k, int x, int y)
 
 
 
-void updateView(int width, int height)
+
+
+void reshape(int width, int height)
 {
 	glViewport(0, 0, width, height);					// Reset The Current Viewport
 	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
 	glLoadIdentity();									// Reset The Projection Matrix
 	float whRatio = (GLfloat)width / (GLfloat)height;
 	gluPerspective(45.0f, whRatio, 0.1f, 100.0f);
-	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
-}
-
-void reshape(int width, int height)
-{
-	if (height == 0)										// Prevent A Divide By Zero By
-	{
-		height = 1;										// Making Height Equal One
-	}
-	act.window_h = height;
-	act.window_w = width;
-	updateView(act.window_h, act.window_w);
+	glMatrixMode(GL_MODELVIEW);
 }
 
 
@@ -169,29 +162,32 @@ void redraw()
 	act.MoveAction();
 	glutSetWindow(MainWindow);
 	redrawMain(act,mazemap);
-	//glutSetWindow(MapWindow);
-	//MiniMap::redrawMap(act,mazemap);
-}
-void WindowChange(int &WindowID, const Action &act, int topWindow)
-{
-	static bool flag = 0;
-	flag = !flag;
-	glutDestroyWindow(WindowID);
-	if (flag)
+//	glutSetWindow(MapWindow_min);
+//	MiniMap::redrawMap(act,mazemap);
+//	glutSetWindow(MapWindow_max);
+//	MiniMap::redrawMap(act, mazemap);
+	if (MapFlag == 0)
 	{
-		int windowSize = std::min(act.window_h, act.window_w)*0.9;
-		WindowID = glutCreateSubWindow(topWindow, (act.window_w - windowSize) >> 1, (act.window_h - windowSize) >> 1, windowSize, windowSize);
+		glutSetWindow(MapWindow_min);
+		glutShowWindow();
+		glutSetWindow(MapWindow_max);
+		glutHideWindow();
 	}
 	else
 	{
-		int windowSize = std::min(act.window_h, act.window_w) / 6;
-		WindowID = glutCreateSubWindow(topWindow, act.window_w - windowSize, act.window_h - windowSize, windowSize, windowSize);
+		glutSetWindow(MapWindow_min);
+		glutHideWindow();
+		glutSetWindow(MapWindow_max);
+		glutShowWindow();
 	}
-	glutSetWindow(MapWindow);
-	glutSetCursor(GLUT_CURSOR_NONE);
-	glutDisplayFunc(redraw);
-	glutKeyboardFunc(MapKeyAction);
-	glutIdleFunc(idle);
+	glutSetWindow(MainWindow);
+	//		glutSetWindow(MainWindow);
+	int aaa = glutGetWindow();
+	int bbb = 1;
+}
+void redrawMap()
+{
+	MiniMap::redrawMap(act, mazemap);
 }
 int main(int argc, char *argv[])
 {
@@ -203,37 +199,57 @@ int main(int argc, char *argv[])
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowPosition(0, 0);
 	glutInitWindowSize(InitWidth,InitHeight);
-	MainWindow = glutCreateWindow("Simple GLUT App");
-	MapWindow = glutCreateSubWindow(MainWindow, InitWidth - min(InitWidth, InitHeight) / 6, InitHeight - min(InitWidth, InitHeight) / 6, min(InitWidth, InitHeight) / 6, min(InitWidth, InitHeight) / 6);
 
-	glutSetWindow(MainWindow);
+	//主窗口
+	MainWindow = glutCreateWindow("MAZE!");
+	//全屏 
+	//glutFullScreen();
 	//绘图
 	glutDisplayFunc(redraw);
 	glutReshapeFunc(reshape);
-
 	//鼠标
 	glutSetCursor(GLUT_CURSOR_NONE);
 	glutPassiveMotionFunc(MouseAction);
 	glutMotionFunc(MouseAction);
 	//键盘
-	glutSetKeyRepeat(GLUT_KEY_REPEAT_OFF);	
+	glutSetKeyRepeat(GLUT_KEY_REPEAT_OFF);
 	glutKeyboardFunc(KeyAction);
 	glutKeyboardUpFunc(KeyUpAction);
 	glutIdleFunc(idle);
 
-	glutSetWindow(MapWindow);
-	glutSetCursor(GLUT_CURSOR_NONE);
-	glutDisplayFunc(redraw);
-	glutKeyboardFunc(MapKeyAction);
-	glutIdleFunc(idle);
-/*
-	//绘图
+	//地图窗口
+
+	MapWindow_min = glutCreateSubWindow(MainWindow, InitWidth - min(InitWidth, InitHeight) / 6, InitHeight - min(InitWidth, InitHeight) / 6, 
+										min(InitWidth, InitHeight) / 6, min(InitWidth, InitHeight) / 6);
+	glutDisplayFunc(redrawMap);
 	glutReshapeFunc(reshape);
 	//鼠标
+	glutSetCursor(GLUT_CURSOR_NONE);
+	glutPassiveMotionFunc(MouseAction);
+	glutMotionFunc(MouseAction);
 	//键盘
 	glutSetKeyRepeat(GLUT_KEY_REPEAT_OFF);
-	*/
+	glutKeyboardFunc(KeyAction);
+	glutKeyboardUpFunc(KeyUpAction);
+	glutIdleFunc(idle);
+	
+	MapWindow_max = glutCreateSubWindow(MainWindow, (InitWidth - min(InitWidth, InitHeight))/2.0, (InitHeight - min(InitWidth, InitHeight))/2.0, 
+										min(InitWidth, InitHeight), min(InitWidth, InitHeight) );
+	
+	glutDisplayFunc(redrawMap);
+	glutReshapeFunc(reshape);
+	//鼠标
+	glutSetCursor(GLUT_CURSOR_NONE);
+	glutPassiveMotionFunc(MouseAction);
+	glutMotionFunc(MouseAction);
+	//键盘
+	glutSetKeyRepeat(GLUT_KEY_REPEAT_OFF);
+	glutKeyboardFunc(KeyAction);
+	glutKeyboardUpFunc(KeyUpAction);
+	glutIdleFunc(idle);
 
+	glutSetWindow(MainWindow);
+	//glutIdleFunc(idle);
 	glutMainLoop();
 	return 0;
 }
