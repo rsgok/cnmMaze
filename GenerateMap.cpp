@@ -12,6 +12,10 @@ MazeType MazeMap::type(int x,int y)
 {
 	return MazeType(y / sizeY);
 }
+MazeMap(const MazeMap &t)
+{
+	
+}
 
 void MazeMap::m_Dig(int x, int y,int k)
 {
