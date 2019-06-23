@@ -28,7 +28,7 @@ void MazeMap::m_Dig(int x, int y,int k)
 		map[x][y + 1 + k] = 0, m_Dig(x, y + 2, k);
 }
 
-MazeMap::MazeMap() : mazeModelSize{ 10,10,10 }
+MazeMap::MazeMap() : mazeModelSize(10)
 {
 	map = new int *[sizeX];
 	for (int i = 0; i < sizeX; ++i)
@@ -60,7 +60,7 @@ MazeMap::MazeMap() : mazeModelSize{ 10,10,10 }
 		for (int i = 0; i < sizeX; ++i)
 			for (int j = 0; j < sizeY; ++j)
 				if (map[i][j+k*sizeY])
-					map[i][j+k*sizeY] = rand() % (mazeModelSize[k] - 1) + 1 + 10*k;
+					map[i][j+k*sizeY] = rand() % (mazeModelSize - 1) + 1;
 	for (int i = 0; i < sizeX; ++i)
 		map[i][0] = map[i][sizeY*sizeNum - 1] = -1;
 	for (int i = 0; i < sizeY * sizeNum; ++i)

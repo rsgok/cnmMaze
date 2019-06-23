@@ -22,7 +22,7 @@ public:
 
 private:
 	int **map;
-	const int mazeModelSize[sizeNum];
+	const int mazeModelSize;
 	//dfs…˙≥…√‘π¨°£
 	void m_Dig(int x, int y,int k);
 
