@@ -10,17 +10,10 @@ namespace MiniMap {
 		glLoadIdentity();
 		//背景色
 		glClearColor((float)0x66 / 0xff, (float)0xcc / 0xff, (float)0xff / 0xff, 0.1f);
-		const int windowSize = 20.5;
+		const int windowSize = 2.5;
 		glOrtho(-windowSize, windowSize,-windowSize, windowSize,-1,1);
 		gluLookAt(0, 0, 1, 0, 0, 0, 1, 0, 0);
-		glBegin(GL_QUADS);
-		glColor3f(1.0f, 1.0f, 1.0f);
-					glVertex2f(0.0, 0.0);
-					glVertex2f(0.0, 1.0);
-					glVertex2f(1.0, 1.0);
-					glVertex2f(1.0, 0.0);
-		glEnd();
-/*
+
 		glPushMatrix();
 		glRotated(act.player.face_ang / acos(-1)*180.0 + 180, 0, 0, 1);//旋转面向方向
  		glTranslated(-act.player.x, -act.player.y,0);//位置平移
@@ -90,7 +83,7 @@ namespace MiniMap {
 
 		
 
-		glEnd();*/
+		glEnd();
 		
 		glutSwapBuffers();
 	}

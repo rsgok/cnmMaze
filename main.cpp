@@ -112,7 +112,7 @@ void redrawMain(Action act,const MazeMap &Map)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();									// Reset The Current Modelview Matrix
 	
-
+		
 	// ”Ω«…Ë÷√
 	if (act.player.CamFlag())
 	{
@@ -162,11 +162,11 @@ void redraw()
 	act.MoveAction();
 	glutSetWindow(MainWindow);
 	redrawMain(act,mazemap);
-//	glutSetWindow(MapWindow_min);
-//	MiniMap::redrawMap(act,mazemap);
+	glutSetWindow(MapWindow_min);
+	MiniMap::redrawMap(act,mazemap);
 //	glutSetWindow(MapWindow_max);
 //	MiniMap::redrawMap(act, mazemap);
-	if (MapFlag == 0)
+/*	if (MapFlag == 0)
 	{
 		glutSetWindow(MapWindow_min);
 		glutShowWindow();
@@ -179,7 +179,7 @@ void redraw()
 	 	glutHideWindow();
 		glutSetWindow(MapWindow_max);
 		glutShowWindow();
-	}
+	}*/
 	glutSetWindow(MainWindow);
 	//		glutSetWindow(MainWindow);
 	int aaa = glutGetWindow();
@@ -187,8 +187,8 @@ void redraw()
 }
 void redrawMap()
 {
-	redrawMain(act, mazemap);
-	//MiniMap::redrawMap(act, mazemap);
+	//redrawMain(act, mazemap);
+	MiniMap::redrawMap(act, mazemap);
 }
 int main(int argc, char *argv[])
 {
@@ -222,7 +222,7 @@ int main(int argc, char *argv[])
 
 	MapWindow_min = glutCreateSubWindow(MainWindow, InitWidth - min(InitWidth, InitHeight) / 6, InitHeight - min(InitWidth, InitHeight) / 6, 
 										min(InitWidth, InitHeight) / 6, min(InitWidth, InitHeight) / 6);
-	glutDisplayFunc(redrawMap);
+	/*glutDisplayFunc(redrawMap);
 	glutReshapeFunc(reshape);
 	// Û±Í
 	glutSetCursor(GLUT_CURSOR_NONE);
@@ -249,7 +249,7 @@ int main(int argc, char *argv[])
 	glutKeyboardUpFunc(KeyUpAction);
 	glutIdleFunc(idle);
 
-	glutSetWindow(MainWindow);
+	glutSetWindow(MainWindow);*/
 	//glutIdleFunc(idle);
 	glutMainLoop();
 	return 0;
