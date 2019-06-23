@@ -21,25 +21,27 @@ void Figure::viewmove(float x_ang, float y_ang)
 }
 void Figure::go_forward(float speed)
 {
-	face_ang = -vx_ang;
-	x += speed * -cos(face_ang);
+	//face_ang = -vx_ang;
+	face_ang = vx_ang + acos(-1);
+	x += speed * cos(face_ang);
 	y += speed * sin(face_ang);
 }
 void Figure::go_backward(float speed)
 {
-	face_ang = -vx_ang;
-	x -= speed * -cos(face_ang);
+	//face_ang = -vx_ang;
+	face_ang = vx_ang + acos(-1);
+	x -= speed * cos(face_ang);
 	y -= speed * sin(face_ang);
 }
 void Figure::go_left(float speed)
 {
-	x += speed * -cos(face_ang-acos(0));
-	y += speed * sin(face_ang-acos(0));
+	x += speed * cos(face_ang+acos(0));
+	y += speed * sin(face_ang+acos(0));
 }
 void Figure::go_right(float speed)
 {
-	x += speed * -cos(face_ang+acos(0));
-	y += speed * sin(face_ang+acos(0));
+	x += speed * cos(face_ang-acos(0));
+	y += speed * sin(face_ang-acos(0));
 }
 void Figure::setViewFlag()
 {
@@ -86,7 +88,7 @@ void Action::MoveAction()
 {
 	bool o = dir_w || dir_a || dir_s || dir_d;
 	if (o)
-		nowSpeed = min(maxSpeed, nowSpeed + Speed_a);
+		nowSpeed = min(maxSpeed, nowSpeed + Speed_a);                                                                                                                                                                                                                                                                                                                                                                                                        
 	else
 		nowSpeed = max(0, nowSpeed - Speed_a);
 	if (nowSpeed > 0)

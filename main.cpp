@@ -122,7 +122,7 @@ void redrawMain(Action act,const MazeMap &Map)
 	}
 	else
 	{
-		gluLookAt(act.player.D_vx(), act.player.D_vy(), act.player.D_vz(),	//视点位置
+			gluLookAt(act.player.D_vx(), act.player.D_vy(), act.player.D_vz(),	//视点位置
 			act.player.D_x(), act.player.D_y(), act.player.D_z(),					//中心为人物
 			0, 1, 0);				// X轴向上
 	}
@@ -140,14 +140,14 @@ void redrawMain(Action act,const MazeMap &Map)
 
 	//不动的方块，作为基准 
 	glPushMatrix();
-	glScalef(1.0, 1.0, 2.0);
-	glutSolidCube(1.0);
+	//glScalef(1.0, 1.0, 2.0);
+	glutWireTeapot(1.0);
 	glPopMatrix();
 
 	//作为角色的方块
 	glPushMatrix();
 	glTranslated(act.player.D_x(), act.player.D_y(), act.player.D_z() );//位置平移
-	glRotated(-act.player.face_ang/acos(-1)*180.0, 0, 1, 0);//旋转面向方向
+	glRotated(act.player.face_ang/acos(-1)*180.0, 0, 1, 0);//旋转面向方向
 	glutSolidCube(1.0);
 	glPopMatrix();
 
@@ -176,7 +176,7 @@ void redraw()
 	else
 	{
 		glutSetWindow(MapWindow_min);
-		glutHideWindow();
+	 	glutHideWindow();
 		glutSetWindow(MapWindow_max);
 		glutShowWindow();
 	}
@@ -187,7 +187,8 @@ void redraw()
 }
 void redrawMap()
 {
-	MiniMap::redrawMap(act, mazemap);
+	redrawMain(act, mazemap);
+	//MiniMap::redrawMap(act, mazemap);
 }
 int main(int argc, char *argv[])
 {
@@ -234,7 +235,7 @@ int main(int argc, char *argv[])
 	glutIdleFunc(idle);
 	
 	MapWindow_max = glutCreateSubWindow(MainWindow, (InitWidth - min(InitWidth, InitHeight))/2.0, (InitHeight - min(InitWidth, InitHeight))/2.0, 
-										min(InitWidth, InitHeight), min(InitWidth, InitHeight) );
+										min(InitWidth, InitHeight)*0.8, min(InitWidth, InitHeight)*0.8);
 	
 	glutDisplayFunc(redrawMap);
 	glutReshapeFunc(reshape);

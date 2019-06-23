@@ -20,7 +20,7 @@ public:
 	Figure(){};
 	Figure(float x, float y, float z, float vx, float vy, float vr)
 		:x(x),y(y),z(z),vx_ang(vx),vy_ang(vy),vr(vr),viewFlag(0) {
-		face_ang = -vx_ang;
+		face_ang = vx_ang + acos(-1);
 	}
 
 	//ÐÐÎªÂß¼­
