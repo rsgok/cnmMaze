@@ -13,6 +13,7 @@ MazeType MazeMap::type(int x,int y)
 	return MazeType(y / sizeY);
 }
 
+
 void MazeMap::m_Dig(int x, int y,int k)
 {
 	const static int DIGPROB = 2;

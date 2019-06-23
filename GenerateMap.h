@@ -8,13 +8,10 @@ enum MazeType {
 };
 //网格地图
 class MazeMap {
-	//地图大小（奇数会比较优美
-	static const int sizeX = 21, sizeY = 31, sizeNum = 3;
-	int **map;
-	const int mazeModelSize[sizeNum];
-
-
+	
 public:
+	//地图大小（奇数会比较优美
+	static const int sizeX = 21, sizeY = 31, sizeNum = 3; 
 	// 构造时随机生成地图
 	MazeMap();
 	~MazeMap();
@@ -24,7 +21,10 @@ public:
 	MazeType type(int x, int y);
 
 private:
+	int **map;
+	const int mazeModelSize[sizeNum];
 	//dfs生成迷宫。
 	void m_Dig(int x, int y,int k);
+
 };
 
