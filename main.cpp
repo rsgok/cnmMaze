@@ -6,6 +6,9 @@
 #include"Action.h"
 #include"MiniMap.h"
 #include"GenerateMap.h"
+#include "global.h"
+#include "wall.h"
+#include "initgame.h"
 using namespace std;
 
 //窗口
@@ -13,6 +16,8 @@ int MainWindow;//主窗口
 int MapWindow_min; //地图窗口(小
 int MapWindow_max; //地图窗口(大
 bool MapFlag = 0; //0:小地图  1:大地图
+
+int basicSceneList;
 
 //行为控制
 Action act(1.5, 1.5, 0, 0, 1, 1);
@@ -93,6 +98,42 @@ void MapKeyAction(unsigned char k, int x, int y)
 
 
 
+void DrawObjs(int i) {
+	glPushMatrix();
+	glScalef(0.1, 0.1, 0.1);
+	glRotatef(0, 0, 90,0);
+	glCallList(myObjList[i]);
+	glPopMatrix();
+}
+
+void DrawMap() {
+	int x = mazemap.sizeX, y = mazemap.sizeY*mazemap.sizeNum;
+	mydraw Draw;
+	for (int i = 0; i < x; ++i) {
+		for (int j = 0; j < y; ++j) {
+			glBegin(GL_LINES);
+			glVertex3f(j, 0, i);
+			glVertex3f(j, 0, i + 1);
+			glVertex3f(j, 0, i);
+			glVertex3f(j + 1, 0, i);
+			glVertex3f(j + 1, 0, i + 1);
+			glVertex3f(j + 1, 0, i);
+			glVertex3f(j + 1, 0, i + 1);
+			glVertex3f(j, 0, i + 1);
+			glEnd();
+			int n = mazemap[i][j];
+		/*	if (n >= 0) 
+			{
+				glPushMatrix();
+				glTranslatef(j + 0.5, 0, i + 0.5);
+				objList.drawElement(n);
+				glPopMatrix();
+			}*/
+		
+		}
+	}
+}
+
 
 
 void reshape(int width, int height)
@@ -136,8 +177,10 @@ void redrawMain(Action act, const MazeMap &Map)
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, white);
 	glEnable(GL_LIGHT0);
+	//基本场景
+	glCallList(basicSceneList);
 
-	//不动的方块，作为基准 
+/*	//不动的方块，作为基准 
 	for (int i = 0; i < mazemap.sizeX; ++i)
 		for (int j = 0; j < mazemap.sizeY*mazemap.sizeNum; ++j)
 			if (mazemap[i][j]>=0)
@@ -156,7 +199,7 @@ void redrawMain(Action act, const MazeMap &Map)
 				glScaled(1,4,1);
 				glutSolidCube(1.0);
 				glPopMatrix();
-			}
+			}*/
 
 	//作为角色的方块
 	glPushMatrix();
@@ -166,6 +209,8 @@ void redrawMain(Action act, const MazeMap &Map)
 	glutSolidCube(1.0);
 	glPopMatrix();
 
+
+	DrawMap();
 
 	glutSwapBuffers();
 
@@ -197,11 +242,18 @@ int main(int argc, char *argv[])
 
 	//主窗口
 	MainWindow = glutCreateWindow("MAZE!");
-	//全屏 
-	//glutFullScreen();
 	//绘图
 	glutDisplayFunc(redraw);
 	glutReshapeFunc(reshape);
+	initGame game;
+	game.loadGame();
+	for (int i = 0; i<=10; i++)
+	{
+		objList.loadElement(i);
+	}
+
+	basicSceneList = game.drawScene();
+
 	//鼠标
 	glutSetCursor(GLUT_CURSOR_NONE);
 	glutPassiveMotionFunc(MouseAction);
