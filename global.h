@@ -10,7 +10,6 @@
 #include <Windows.h>
 #include <ctime>
 #include <vector>
-#include "mydraw.h"
 #include "Action.h"
 #include "GenerateMap.h"
 
@@ -39,7 +38,6 @@ struct POLAR  polar = { 40.0f, 90, 90 };*/
 #define FloorTexIndex 0
 
 
-extern mydraw objList;
 
 extern GLint myObjList[10];
 extern GLint mapList;

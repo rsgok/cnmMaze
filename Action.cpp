@@ -62,7 +62,7 @@ void Action::ViewAction(int x,int y)
 {
 	
 	
-	const static float MoveSensitivity_x = 0.1,
+	const static float MoveSensitivity_x = 0.01,
 					   MoveSensitivity_y = 0.05;
 	player.viewmove((x - window_w / 2)*MoveSensitivity_x, (y - window_h / 2)*MoveSensitivity_y);
 	FixMousePos(x - window_w / 2, y - window_h / 2);
@@ -119,7 +119,7 @@ void Action::MoveAction(const MazeMap &Mmap)
 	}
 	else
 	{
-		player.z -= 0.006;
+		player.z -= jmp_g;
 	}
 	if (player.Collision(Mmap))
 	{
@@ -149,4 +149,10 @@ bool Figure::Collision(const MazeMap &Mmap)
 			return true;
 	}
 	return false;
+}
+bool Action::InView(float Ix, float Iy)
+{
+	if (abs(Ix - player.x) + abs(Iy - player.y) <= 2) return true;
+	return abs(Ix-player.x)+abs(Iy-player.y)<=5 
+		&&(Ix - player.x)*(player.pos_vx() - player.x) + (Iy - player.y)*(player.pos_vy() - player.y)<=0;
 }

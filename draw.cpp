@@ -12,7 +12,7 @@ void draw::loadElement(int num) {
 	std::vector<tinyobj::material_t> materials;
 	std::string warn, err;
 
-	string filename;
+	string filename,modelPath;
 	switch (num)
 	{
 	case 100:
@@ -28,7 +28,7 @@ void draw::loadElement(int num) {
 		filename = "deer.obj";
 		break;
 	case 3:
-		filename = "house.obj";
+		filename = "tree3.obj";
 		break;
 	case 4:
 		filename = "12281_Container_v2_L2.obj";
@@ -52,8 +52,8 @@ void draw::loadElement(int num) {
 		filename = "wood.obj";
 		break;
 	}
-
-	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filename.c_str())) {
+	modelPath = "assets/" + filename;
+	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, modelPath.c_str())) {
 		throw std::runtime_error(warn + err);
 	}
 	std::cout << "[LoadOBJ] # of vertices  : " << (attrib.vertices.size() / 3) << std::endl;
@@ -84,18 +84,18 @@ void draw::loadElement(int num) {
 					tinyobj::real_t nx = attrib.normals[3 * idx.normal_index + 0];
 					tinyobj::real_t ny = attrib.normals[3 * idx.normal_index + 1];
 					tinyobj::real_t nz = attrib.normals[3 * idx.normal_index + 2];
-					tinyobj::real_t tx = attrib.texcoords[2 * idx.texcoord_index + 0];
-					tinyobj::real_t ty = attrib.texcoords[2 * idx.texcoord_index + 1];
+					//tinyobj::real_t tx = attrib.texcoords[2 * idx.texcoord_index + 0];
+					//tinyobj::real_t ty = attrib.texcoords[2 * idx.texcoord_index + 1];
 					// Optional: vertex colors
-					tinyobj::real_t red = attrib.colors[3 * idx.vertex_index + 0];
-					tinyobj::real_t green = attrib.colors[3 * idx.vertex_index + 1];
-					tinyobj::real_t blue = attrib.colors[3 * idx.vertex_index + 2];
+					//tinyobj::real_t red = attrib.colors[3 * idx.vertex_index + 0];
+					//tinyobj::real_t green = attrib.colors[3 * idx.vertex_index + 1];
+					//tinyobj::real_t blue = attrib.colors[3 * idx.vertex_index + 2];
 
 					//printf("v:%.2f,%.2f,%.2f\n", vx, vy, vz);
 
 					glVertex3f(vx, vy, vz);
 					glNormal3f(nx, ny, nz);
-					glTexCoord2f(tx, ty);
+					//glTexCoord2f(tx, ty);
 
 				}
 				index_offset += fv;
@@ -109,6 +109,8 @@ void draw::loadElement(int num) {
 	glEndList();
 
 	objlist[num].second = lid;
+
+	printf("obj load\n");
 }
 
 void draw::drawElement(int num) {

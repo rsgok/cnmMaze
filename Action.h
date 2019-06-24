@@ -14,7 +14,7 @@ public:
 	float face_ang;		//角色朝向位置
 	bool viewFlag;		//角色视角
 
-	float figSize = 0.3;
+	float figSize = 0.2;
 	//计算返回视点坐标位置
 	float pos_vx();
 	float pos_vy();
@@ -73,7 +73,7 @@ public:
 	const float jmp_g;
 	float jmp_x;
 	Action(float x, float y, float z, float vx, float vy, float vr) 
-		:player(x, y, z,vx ,vy ,vr),maxSpeed(0.005),Speed_a(0.005),jmp_g(0.005)
+		:player(x, y, z,vx ,vy ,vr),maxSpeed(0.03),Speed_a(0.001),jmp_g(0.03)
 	{
 		nowSpeed = 0.0; dir_w = dir_a = dir_s = dir_d = 0;
 	}
@@ -82,7 +82,7 @@ public:
 	void MoveAction(const MazeMap &Mmap);
 	void jmp();
 	//void KeyAction(unsigned char k, int x, int y);
-	
+	bool InView(float Ix,float Iy);
 
 };
 

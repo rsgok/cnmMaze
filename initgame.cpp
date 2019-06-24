@@ -39,13 +39,12 @@ void initGame::drawFloor() {
 	glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, Tex[FloorTexIndex]);
-	glTranslatef(0, -1.0, 0);
 
 	glBegin(GL_QUADS);
-	glTexCoord2i(90, 20); glVertex3f(-90, 0, 20);
-	glTexCoord2i(90, 0); glVertex3f(-90, 0, -20);
-	glTexCoord2i(0, 0); glVertex3f(90, 0, -20);
-	glTexCoord2i(0, 20); glVertex3f(90, 0, 20);
+	glTexCoord2i(93, 21); glVertex3f(-93, 0, 21);
+	glTexCoord2i(93, 0); glVertex3f(-93, 0, -21);
+	glTexCoord2i(0, 0); glVertex3f(93, 0, -21);
+	glTexCoord2i(0, 21); glVertex3f(93, 0, 21);
 	glEnd();
 
 	glDisable(GL_TEXTURE_2D);
@@ -53,9 +52,9 @@ void initGame::drawFloor() {
 }
 void initGame::drawWall() {
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-	float skyHei = 30;                      //天空的高度
-	float skyLen = 90;                   //天空的长度
-	float skyWid = 20;
+	float skyHei = 5;                      //天空的高度
+	float skyLen = 93;                   //天空的长度
+	float skyWid = 21;
 	//后
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, Tex[16]);
@@ -65,29 +64,29 @@ void initGame::drawWall() {
 	glTexCoord2f(1, 1);
 	glVertex3f(skyLen, +skyHei, skyWid);
 	glTexCoord2f(0, 1);
-	glVertex3f(-skyLen, +skyHei, skyWid);
+	glVertex3f(0, +skyHei, skyWid);
 	glTexCoord2f(0, 0);
-	glVertex3f(-skyLen, -skyHei, skyWid);
+	glVertex3f(0, -skyHei, skyWid);
 	glEnd();
 	//前
 	glBindTexture(GL_TEXTURE_2D, Tex[16]);
 	glBegin(GL_TRIANGLE_FAN);
 	glTexCoord2f(1, 0);
-	glVertex3f(-skyLen, -skyHei, -skyWid);
+	glVertex3f(0, -skyHei, 0);
 	glTexCoord2f(1, 1);
-	glVertex3f(-skyLen, skyHei, -skyWid);
+	glVertex3f(0, skyHei, 0);
 	glTexCoord2f(0, 1);
-	glVertex3f(skyLen, skyHei, -skyWid);
+	glVertex3f(skyLen, skyHei,0);
 	glTexCoord2f(0, 0);
-	glVertex3f(skyLen, -skyHei, -skyWid);
+	glVertex3f(skyLen, -skyHei, 0);
 	glEnd();
 	//右面
 	glBindTexture(GL_TEXTURE_2D, Tex[16]);
 	glBegin(GL_TRIANGLE_FAN);
 	glTexCoord2f(1, 0);
-	glVertex3f(skyLen, -skyHei, -skyWid);
+	glVertex3f(skyLen, -skyHei,0);
 	glTexCoord2f(1, 1);
-	glVertex3f(skyLen, skyHei, -skyWid);
+	glVertex3f(skyLen, skyHei, 0);
 	glTexCoord2f(0, 1);
 	glVertex3f(skyLen, skyHei, skyWid);
 	glTexCoord2f(0, 0);
@@ -97,21 +96,21 @@ void initGame::drawWall() {
 	glBindTexture(GL_TEXTURE_2D, Tex[16]);
 	glBegin(GL_TRIANGLE_FAN);
 	glTexCoord2f(1, 0);
-	glVertex3f(-skyLen, -skyHei, skyWid);
+	glVertex3f(0, -skyHei, skyWid);
 	glTexCoord2f(1, 1);
-	glVertex3f(-skyLen, +skyHei, skyWid);
+	glVertex3f(0, +skyHei, skyWid);
 	glTexCoord2f(0, 1);
-	glVertex3f(-skyLen, +skyHei, -skyWid);
+	glVertex3f(0, +skyHei, 0);
 	glTexCoord2f(0, 0);
-	glVertex3f(-skyLen, -skyHei, -skyWid);
+	glVertex3f(0, -skyHei, 0);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 }
 void initGame::drawSky() {
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-	float skyHei = 30;                      //天空的高度
-	float skyLen = 90;                   //天空的长度
-	float skyWid = 20;
+	float skyHei = 31;                      //天空的高度
+	float skyLen = 93;                   //天空的长度
+	float skyWid = 5;
 
 	glEnable(GL_TEXTURE_2D);
 	//顶面

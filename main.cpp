@@ -9,6 +9,8 @@
 #include "global.h"
 #include "wall.h"
 #include "initgame.h"
+#include "draw.h"
+#include "texture.h"
 using namespace std;
 
 //����
@@ -20,9 +22,10 @@ bool MapFlag = 0; //0:С��ͼ  1:���ͼ
 int basicSceneList;
 
 //��Ϊ����
-Action act(1.5, 1.5, 0, 0, 1, 1);
+Action act(1.5, 1.5, 0, 0, 1,1);
 //��ͼ
 MazeMap mazemap;
+draw objDraw;
 //�ص�����
 void idle()
 {
@@ -52,15 +55,17 @@ void KeyAction(unsigned char k, int x, int y)
 		break;
 	case 'v':
 		act.player.setViewFlag();
+		if(act.player.CamFlag()) act.player.vr =8;
+		else act.player.vr = 1;
 		break;
 	case ' ':
 		act.jmp();
 		break;
 	case 27:
 		exit(0);
-	case 'm':
-		MapFlag = ! MapFlag;
 		break;
+//	case 'c':
+
 	}
 }
 void KeyUpAction(unsigned char k, int x, int y)
@@ -83,16 +88,20 @@ void KeyUpAction(unsigned char k, int x, int y)
 	}
 	
 }
-void MapKeyAction(unsigned char k, int x, int y)
+void MouseClick(int button, int state, int x, int y)
 {
-	switch (k)
+	const float Delt_vr = 0.1;
+	switch (button)
 	{
-	case 'm':
-		MapFlag = !MapFlag;
+	case 3:
+		act.player.vr -= Delt_vr;
 		break;
-
+	case 4:
+		act.player.vr += Delt_vr;
+		break;
 	}
 }
+
 
 ////////////////////////////////////////////////////////for test
 
@@ -100,15 +109,14 @@ void MapKeyAction(unsigned char k, int x, int y)
 
 void DrawObjs(int i) {
 	glPushMatrix();
-	glScalef(0.1, 0.1, 0.1);
-	glRotatef(0, 0, 90,0);
-	glCallList(myObjList[i]);
+	glScalef(0.042, 0.042, 0.042);
+	//glRotatef(0, 0, 90,0);
+	objDraw.drawElement(i);
 	glPopMatrix();
 }
 
 void DrawMap() {
 	int x = mazemap.sizeX, y = mazemap.sizeY*mazemap.sizeNum;
-	mydraw Draw;
 	for (int i = 0; i < x; ++i) {
 		for (int j = 0; j < y; ++j) {
 			glBegin(GL_LINES);
@@ -122,13 +130,13 @@ void DrawMap() {
 			glVertex3f(j, 0, i + 1);
 			glEnd();
 			int n = mazemap[i][j];
-		/*	if (n >= 0) 
+			if (n >= 0&&act.InView(i,j)) 
 			{
 				glPushMatrix();
 				glTranslatef(j + 0.5, 0, i + 0.5);
-				objList.drawElement(n);
+				DrawObjs(n);
 				glPopMatrix();
-			}*/
+			}
 		
 		}
 	}
@@ -154,60 +162,45 @@ void redrawMain(Action act, const MazeMap &Map)
 
 
 	//�ӽ�����
+	const float Delt_y =0.3;
 	if (act.player.CamFlag())
 	{
-		gluLookAt(act.player.D_x() - act.player.D_vx() / 5 * 2, act.player.D_y() - act.player.D_vy() / 5 * 2, act.player.D_z() - act.player.D_vz() / 5 * 2,	//�ӵ�λ��
-			-2 * act.player.D_vx(), -2 * act.player.D_vy(), -2 * act.player.D_vz(),					//����Ϊ����
+		
+		gluLookAt(act.player.D_x() , act.player.D_y() +0.4, act.player.D_z(),	//�ӵ�λ��
+			 -act.player.D_vx() + 2 * act.player.D_x() + 0.4,  -act.player.D_vy() + 2 * act.player.D_y(),  -act.player.D_vz() + 2 * act.player.D_z(),					//����Ϊ����
 			0, 1, 0);				// X������
 	}
 	else
 	{
-		gluLookAt(act.player.D_vx(), act.player.D_vy(), act.player.D_vz(),	//�ӵ�λ��
-			act.player.D_x(), act.player.D_y(), act.player.D_z(),					//����Ϊ����
+		
+		gluLookAt(act.player.D_vx(), Delt_y + act.player.D_vy(), act.player.D_vz(),	//�ӵ�λ��
+			act.player.D_x(), Delt_y + act.player.D_y(), act.player.D_z(),					//����Ϊ����
 			0, 1, 0);				// X������
 	}
 
 
 
 	//�ƹ�
+	
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
-	GLfloat white[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat light_pos[] = { 5,5,5,1 };
+	GLfloat white[] = { 0.1, 0.1, 0.1, 1.0 };
+	GLfloat light_pos[] = { 5,5,5,-1 };
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, white);
 	glEnable(GL_LIGHT0);
 	//��������
 	glCallList(basicSceneList);
-
-/*	//�����ķ��飬��Ϊ��׼ 
-	for (int i = 0; i < mazemap.sizeX; ++i)
-		for (int j = 0; j < mazemap.sizeY*mazemap.sizeNum; ++j)
-			if (mazemap[i][j]>=0)
-			{
-				int MMM = mazemap[i][j] + 1;
-				glPushMatrix();
-				glTranslated(j+0.5,0,i+0.5);
-				glScaled(objSize[MMM][0]*2,objSize[MMM][1],objSize[MMM][0]*2);
-				glutSolidCube(1.0);
-				glPopMatrix();
-			}
-			else
-			{
-				glPushMatrix();
-				glTranslated(j + 0.5, 2, i + 0.5);
-				glScaled(1,4,1);
-				glutSolidCube(1.0);
-				glPopMatrix();
-			}*/
-
-	//��Ϊ��ɫ�ķ���
-	glPushMatrix();
-	glTranslated(act.player.D_x(), act.player.D_y(), act.player.D_z() );//λ��ƽ��
-	glRotated(act.player.face_ang/acos(-1)*180.0, 0, 1, 0);//��ת������
-	glScaled(0.6,0.6,0.6);
-	glutSolidCube(1.0);
-	glPopMatrix();
+	if (act.player.CamFlag() == 0)
+	{
+		glPushMatrix();
+		glTranslated(act.player.D_x(), act.player.D_y(), act.player.D_z());//λ��ƽ��
+		glRotated(act.player.face_ang / acos(-1)*180.0 - 45.0, 0, 1, 0);//��ת������
+		glScaled(0.6, 0.6, 0.6);
+		DrawObjs(100);
+		glPopMatrix();
+	}
+	
 
 
 	DrawMap();
@@ -248,8 +241,9 @@ int main(int argc, char *argv[])
 	game.loadGame();
 	for (int i = 0; i<=10; i++)
 	{
-		objList.loadElement(i);
+		objDraw.loadElement(i);
 	}
+	objDraw.loadElement(100);
 
 	basicSceneList = game.drawScene();
 
@@ -257,6 +251,7 @@ int main(int argc, char *argv[])
 	glutSetCursor(GLUT_CURSOR_NONE);
 	glutPassiveMotionFunc(MouseAction);
 	glutMotionFunc(MouseAction);
+	glutMouseFunc(MouseClick);
 	//����
 	glutSetKeyRepeat(GLUT_KEY_REPEAT_OFF);
 	glutKeyboardFunc(KeyAction);

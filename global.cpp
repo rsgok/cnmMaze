@@ -1,7 +1,5 @@
 #include "global.h"
 
-mydraw objList;
-
 GLint myObjList[10];
 GLint mapList = 0;
 GLint wallList = 0;
