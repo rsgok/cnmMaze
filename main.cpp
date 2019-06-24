@@ -10,7 +10,7 @@
 #include "wall.h"
 #include "initgame.h"
 #include "draw.h"
-#include "texture.h"
+#include "screenShot.h"
 using namespace std;
 
 //����
@@ -64,8 +64,8 @@ void KeyAction(unsigned char k, int x, int y)
 	case 27:
 		exit(0);
 		break;
-//	case 'c':
-
+	case 'c':
+		SnapScreen(1200,800);
 	}
 }
 void KeyUpAction(unsigned char k, int x, int y)
