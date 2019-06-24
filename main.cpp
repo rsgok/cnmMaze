@@ -6,16 +6,24 @@
 #include"Action.h"
 #include"MiniMap.h"
 #include"GenerateMap.h"
+#include "global.h"
+#include "wall.h"
+#include "initgame.h"
 using namespace std;
 
-//´°¿Ú
-int MainWindow;//Ö÷´°¿Ú
-int MapWindow; //µØÍ¼´°¿Ú
-//ÐÐÎª¿ØÖÆ
-Action act(1.5, 1.5, 0, 0, 1, 5);
-//µØÍ¼
+//ï¿½ï¿½ï¿½ï¿½
+int MainWindow;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+int MapWindow_min; //ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½(Ð¡
+int MapWindow_max; //ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½
+bool MapFlag = 0; //0:Ð¡ï¿½ï¿½Í¼  1:ï¿½ï¿½ï¿½Í¼
+
+int basicSceneList;
+
+//ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½
+Action act(1.5, 1.5, 0, 0, 1, 1);
+//ï¿½ï¿½Í¼
 MazeMap mazemap;
-//»Øµ÷º¯Êý
+//ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½
 void idle()
 {
 	glutPostRedisplay();
@@ -26,7 +34,6 @@ void  MouseAction(int x, int y)
 	glutSetWindow(MainWindow);
 	act.ViewAction(x, y);
 }
-void WindowChange(int &WindowID, const Action &act, int topWindow);
 void KeyAction(unsigned char k, int x, int y)
 {
 	switch (k)
@@ -43,13 +50,16 @@ void KeyAction(unsigned char k, int x, int y)
 	case 'd':
 		act.setMoveDir(Direction::D, 1);
 		break;
+	case 'v':
+		act.player.setViewFlag();
+		break;
 	case ' ':
 		act.jmp();
 		break;
 	case 27:
 		exit(0);
 	case 'm':
-		WindowChange(MapWindow,act,MainWindow);
+		MapFlag = ! MapFlag;
 		break;
 	}
 }
@@ -78,7 +88,7 @@ void MapKeyAction(unsigned char k, int x, int y)
 	switch (k)
 	{
 	case 'm':
-		WindowChange(MapWindow, act, MainWindow);
+		MapFlag = !MapFlag;
 		break;
 
 	}
@@ -88,41 +98,78 @@ void MapKeyAction(unsigned char k, int x, int y)
 
 
 
-void updateView(int width, int height)
+void DrawObjs(int i) {
+	glPushMatrix();
+	glScalef(0.1, 0.1, 0.1);
+	glRotatef(0, 0, 90,0);
+	glCallList(myObjList[i]);
+	glPopMatrix();
+}
+
+void DrawMap() {
+	int x = mazemap.sizeX, y = mazemap.sizeY*mazemap.sizeNum;
+	mydraw Draw;
+	for (int i = 0; i < x; ++i) {
+		for (int j = 0; j < y; ++j) {
+			glBegin(GL_LINES);
+			glVertex3f(j, 0, i);
+			glVertex3f(j, 0, i + 1);
+			glVertex3f(j, 0, i);
+			glVertex3f(j + 1, 0, i);
+			glVertex3f(j + 1, 0, i + 1);
+			glVertex3f(j + 1, 0, i);
+			glVertex3f(j + 1, 0, i + 1);
+			glVertex3f(j, 0, i + 1);
+			glEnd();
+			int n = mazemap[i][j];
+		/*	if (n >= 0) 
+			{
+				glPushMatrix();
+				glTranslatef(j + 0.5, 0, i + 0.5);
+				objList.drawElement(n);
+				glPopMatrix();
+			}*/
+		
+		}
+	}
+}
+
+
+
+void reshape(int width, int height)
 {
 	glViewport(0, 0, width, height);					// Reset The Current Viewport
 	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
 	glLoadIdentity();									// Reset The Projection Matrix
 	float whRatio = (GLfloat)width / (GLfloat)height;
 	gluPerspective(45.0f, whRatio, 0.1f, 100.0f);
-	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
+	glMatrixMode(GL_MODELVIEW);
 }
 
-void reshape(int width, int height)
+void redrawMain(Action act, const MazeMap &Map)
 {
-	if (height == 0)										// Prevent A Divide By Zero By
-	{
-		height = 1;										// Making Height Equal One
-	}
-	act.window_h = height;
-	act.window_w = width;
-	updateView(act.window_h, act.window_w);
-}
 
-
-void redrawMain(Action act,MazeMap Map)
-{
-	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();									// Reset The Current Modelview Matrix
-	
 
-	//ÊÓ½ÇÉèÖÃ
-	gluLookAt(  act.player.pos_vx(),  act.player.pos_vy(),act.player.pos_vz(),	//ÊÓµãÎ»ÖÃ
-		act.player.x,  act.player.y,act.player.z,					//ÖÐÐÄÎªÈËÎï
-		0, 0, 1);				// XÖáÏòÉÏ
 
-	//µÆ¹â
+	//ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½
+	if (act.player.CamFlag())
+	{
+		gluLookAt(act.player.D_x() - act.player.D_vx() / 5 * 2, act.player.D_y() - act.player.D_vy() / 5 * 2, act.player.D_z() - act.player.D_vz() / 5 * 2,	//ï¿½Óµï¿½Î»ï¿½ï¿½
+			-2 * act.player.D_vx(), -2 * act.player.D_vy(), -2 * act.player.D_vz(),					//ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½
+			0, 1, 0);				// Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	}
+	else
+	{
+		gluLookAt(act.player.D_vx(), act.player.D_vy(), act.player.D_vz(),	//ï¿½Óµï¿½Î»ï¿½ï¿½
+			act.player.D_x(), act.player.D_y(), act.player.D_z(),					//ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½
+			0, 1, 0);				// Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	}
+
+
+
+	//ï¿½Æ¹ï¿½
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	GLfloat white[] = { 1.0, 1.0, 1.0, 1.0 };
@@ -130,19 +177,40 @@ void redrawMain(Action act,MazeMap Map)
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, white);
 	glEnable(GL_LIGHT0);
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	glCallList(basicSceneList);
 
-	//²»¶¯µÄ·½¿é£¬×÷Îª»ù×¼ 
+/*	//ï¿½ï¿½ï¿½ï¿½ï¿½Ä·ï¿½ï¿½é£¬ï¿½ï¿½Îªï¿½ï¿½×¼ 
+	for (int i = 0; i < mazemap.sizeX; ++i)
+		for (int j = 0; j < mazemap.sizeY*mazemap.sizeNum; ++j)
+			if (mazemap[i][j]>=0)
+			{
+				int MMM = mazemap[i][j] + 1;
+				glPushMatrix();
+				glTranslated(j+0.5,0,i+0.5);
+				glScaled(objSize[MMM][0]*2,objSize[MMM][1],objSize[MMM][0]*2);
+				glutSolidCube(1.0);
+				glPopMatrix();
+			}
+			else
+			{
+				glPushMatrix();
+				glTranslated(j + 0.5, 2, i + 0.5);
+				glScaled(1,4,1);
+				glutSolidCube(1.0);
+				glPopMatrix();
+			}*/
+
+	//ï¿½ï¿½Îªï¿½ï¿½É«ï¿½Ä·ï¿½ï¿½ï¿½
 	glPushMatrix();
-	glScalef(1.0, 1.0, 2.0);
+	glTranslated(act.player.D_x(), act.player.D_y(), act.player.D_z() );//Î»ï¿½ï¿½Æ½ï¿½ï¿½
+	glRotated(act.player.face_ang/acos(-1)*180.0, 0, 1, 0);//ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	glScaled(0.6,0.6,0.6);
 	glutSolidCube(1.0);
 	glPopMatrix();
 
-	//×÷Îª½ÇÉ«µÄ·½¿é
-	glPushMatrix();
-	glTranslated(act.player.x, act.player.y, act.player.z );//Î»ÖÃÆ½ÒÆ
-	glRotated(-act.player.face_ang/acos(-1)*180.0, 0, 0, 1);//Ðý×ªÃæÏò·½Ïò
-	glutSolidCube(1.0);
-	glPopMatrix();
+
+	DrawMap();
 
 	glutSwapBuffers();
 
@@ -151,74 +219,54 @@ void redrawMain(Action act,MazeMap Map)
 
 void redraw()
 {
-	//ÒÆ¶¯´¦Àí 
-	act.MoveAction();
+	//ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½ 
+	act.MoveAction(mazemap);
 	glutSetWindow(MainWindow);
 	redrawMain(act,mazemap);
-	glutSetWindow(MapWindow);
+	glutSetWindow(MapWindow_min);
 	MiniMap::redrawMap(act,mazemap);
+	glutSetWindow(MainWindow);
 }
-void WindowChange(int &WindowID, const Action &act, int topWindow)
-{
-	static bool flag = 0;
-	flag = !flag;
-	glutDestroyWindow(WindowID);
-	if (flag)
-	{
-		int windowSize = std::min(act.window_h, act.window_w)*0.9;
-		WindowID = glutCreateSubWindow(topWindow, (act.window_w - windowSize) >> 1, (act.window_h - windowSize) >> 1, windowSize, windowSize);
-	}
-	else
-	{
-		int windowSize = std::min(act.window_h, act.window_w) / 6;
-		WindowID = glutCreateSubWindow(topWindow, act.window_w - windowSize, act.window_h - windowSize, windowSize, windowSize);
-	}
-	glutSetWindow(MapWindow);
-	glutSetCursor(GLUT_CURSOR_NONE);
-	glutDisplayFunc(redraw);
-	glutKeyboardFunc(MapKeyAction);
-	glutIdleFunc(idle);
-}
+
 int main(int argc, char *argv[])
 {
-	//Ä¬ÈÏ³õÊ¼´óÐ¡
-	const int InitWidth = 1280, InitHeight = 960;
+	//Ä¬ï¿½Ï³ï¿½Ê¼ï¿½ï¿½Ð¡
+	const int InitWidth = 1200, InitHeight =800;
 	act.window_h = InitHeight;
 	act.window_w = InitWidth;
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowPosition(0, 0);
 	glutInitWindowSize(InitWidth,InitHeight);
-	MainWindow = glutCreateWindow("Simple GLUT App");
-	MapWindow = glutCreateSubWindow(MainWindow, InitWidth - min(InitWidth, InitHeight) / 6, InitHeight - min(InitWidth, InitHeight) / 6, min(InitWidth, InitHeight) / 6, min(InitWidth, InitHeight) / 6);
 
-	glutSetWindow(MainWindow);
-	//»æÍ¼
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	MainWindow = glutCreateWindow("MAZE!");
+	//ï¿½ï¿½Í¼
 	glutDisplayFunc(redraw);
 	glutReshapeFunc(reshape);
+	initGame game;
+	game.loadGame();
+	for (int i = 0; i<=10; i++)
+	{
+		objList.loadElement(i);
+	}
 
-	//Êó±ê
+	basicSceneList = game.drawScene();
+
+	//ï¿½ï¿½ï¿½
 	glutSetCursor(GLUT_CURSOR_NONE);
 	glutPassiveMotionFunc(MouseAction);
 	glutMotionFunc(MouseAction);
-	//¼üÅÌ
-	glutSetKeyRepeat(GLUT_KEY_REPEAT_OFF);	
+	//ï¿½ï¿½ï¿½ï¿½
+	glutSetKeyRepeat(GLUT_KEY_REPEAT_OFF);
 	glutKeyboardFunc(KeyAction);
 	glutKeyboardUpFunc(KeyUpAction);
 	glutIdleFunc(idle);
 
-	glutSetWindow(MapWindow);
-	glutSetCursor(GLUT_CURSOR_NONE);
-	glutDisplayFunc(redraw);
-	glutKeyboardFunc(MapKeyAction);
-	glutIdleFunc(idle);
-/*
-	//»æÍ¼
-	glutReshapeFunc(reshape);
-	//Êó±ê
-	//¼üÅÌ
-	glutSetKeyRepeat(GLUT_KEY_REPEAT_OFF);
-	*/
+	//ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½
+
+	MapWindow_min = glutCreateSubWindow(MainWindow, InitWidth - min(InitWidth, InitHeight) / 6, InitHeight - min(InitWidth, InitHeight) / 6, 
+										min(InitWidth, InitHeight) / 6, min(InitWidth, InitHeight) / 6);
 
 	glutMainLoop();
 	return 0;

@@ -1,53 +1,22 @@
 #pragma once
 #include"GenerateMap.h"
+#include"GL/glut.h"
 namespace MiniMap {
 	
-	void WindowChange(int &WindowID,const Action &act,int topWindow)
-	{
-		static bool flag = 0;
-		flag = !flag;
-		glutDestroyWindow(WindowID);
-		if (flag)
-		{
-			int windowSize = std::min(act.window_h, act.window_w)*0.9;
-			WindowID = glutCreateSubWindow(topWindow, (act.window_w -windowSize)>>1 , (act.window_h - windowSize) >> 1,windowSize, windowSize);
-		}
-		else
-		{
-			int windowSize = std::min(act.window_h, act.window_w) / 6;
-			WindowID = glutCreateSubWindow(topWindow, act.window_w - windowSize, act.window_h - windowSize, windowSize, windowSize);
-		}
-	;
-		/*glutSetWindow(WindowID);
-		if (flag)
-		{
-			int windowSize = std::min(act.window_h, act.window_w)*0.9;
-			glutPositionWindow((act.window_w - windowSize) >> 1, (act.window_h - windowSize) >> 1);
-			glutReshapeWindow(windowSize, windowSize);
-			glutPostRedisplay();
-		}
-		else
-		{
-			int windowSize = std::min(act.window_h, act.window_w) /6;
-			glutPositionWindow(0, act.window_h - windowSize);
-			glutReshapeWindow(windowSize, windowSize);
-			glutPostRedisplay();
-		}*/
-	}
+	
 	void redrawMap(Action act,const MazeMap &mazemap)
 	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT);
 		glLoadIdentity();
-		//±³¾°É«
+		//ï¿½ï¿½ï¿½ï¿½É«
 		glClearColor((float)0x66 / 0xff, (float)0xcc / 0xff, (float)0xff / 0xff, 0.1f);
 		const int windowSize = 2.5;
 		glOrtho(-windowSize, windowSize,-windowSize, windowSize,-1,1);
 		gluLookAt(0, 0, 1, 0, 0, 0, 1, 0, 0);
 
-
 		glPushMatrix();
-		glRotated(act.player.face_ang / acos(-1)*180.0 + 180, 0, 0, 1);//Ðý×ªÃæÏò·½Ïò
- 		glTranslated(-act.player.x, -act.player.y,0);//Î»ÖÃÆ½ÒÆ
+		glRotated(-act.player.face_ang / acos(-1)*180.0, 0, 0, 1);//ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ 		glTranslated(-act.player.x, -act.player.y,0);//Î»ï¿½ï¿½Æ½ï¿½ï¿½
 		glBegin(GL_QUADS);
 		glColor3f(1.0f, 1.0f, 1.0f); 
 		for (int i = 0; i < mazemap.sizeX;++i)
@@ -72,44 +41,44 @@ namespace MiniMap {
 		glPopMatrix();
 		glBegin(GL_QUADS);
 		glColor3f((float)0x66 / 0xff, (float)0xcc / 0xff, (float)0xff / 0xff);
-		glVertex2f(-windowSize, windowSize);
-		glVertex2f(-windowSize, windowSize - 0.15);
-		glVertex2f(windowSize, windowSize - 0.15);
-		glVertex2f(windowSize, windowSize);
+		glVertex3f(-windowSize, windowSize,0);
+		glVertex3f(-windowSize, windowSize - 0.3,0);
+		glVertex3f(windowSize, windowSize - 0.3,0);
+		glVertex3f(windowSize, windowSize,0);
 
 		glVertex2f(-windowSize, -windowSize);
-		glVertex2f(-windowSize + 0.15, -windowSize);
-		glVertex2f(-windowSize + 0.15, windowSize);
+		glVertex2f(-windowSize + 0.3, -windowSize);
+		glVertex2f(-windowSize + 0.3, windowSize);
 		glVertex2f(-windowSize, windowSize);
 
 		glVertex2f(-windowSize, -windowSize);
-		glVertex2f(-windowSize, -windowSize + 0.15);
-		glVertex2f(windowSize, -windowSize + 0.15);
+		glVertex2f(-windowSize, -windowSize + 0.3);
+		glVertex2f(windowSize, -windowSize + 0.3);
 		glVertex2f(windowSize, -windowSize);
 
 		glVertex2f(windowSize, -windowSize);
-		glVertex2f(windowSize - 0.15, -windowSize);
-		glVertex2f(windowSize - 0.15, windowSize);
+		glVertex2f(windowSize - 0.3, -windowSize);
+		glVertex2f(windowSize - 0.3, windowSize);
 		glVertex2f(windowSize, windowSize);
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glVertex2f(-windowSize, windowSize);
-		glVertex2f(-windowSize, windowSize-0.05);
-		glVertex2f(windowSize, windowSize-0.05);
+		glVertex2f(-windowSize, windowSize-0.1);
+		glVertex2f(windowSize, windowSize-0.1);
 		glVertex2f(windowSize, windowSize);
 
 		glVertex2f(-windowSize, -windowSize);
-		glVertex2f(-windowSize + 0.05, -windowSize);
-		glVertex2f(-windowSize + 0.05, windowSize);
+		glVertex2f(-windowSize + 0.1, -windowSize);
+		glVertex2f(-windowSize + 0.1, windowSize);
 		glVertex2f(-windowSize, windowSize);
 
 		glVertex2f(-windowSize, -windowSize);
-		glVertex2f(-windowSize, -windowSize + 0.05);
-		glVertex2f(windowSize, -windowSize + 0.05);
+		glVertex2f(-windowSize, -windowSize + 0.1);
+		glVertex2f(windowSize, -windowSize + 0.1);
 		glVertex2f(windowSize, -windowSize);
 
 		glVertex2f(windowSize, -windowSize);
-		glVertex2f(windowSize - 0.05, -windowSize);
-		glVertex2f(windowSize - 0.05, windowSize);
+		glVertex2f(windowSize - 0.1, -windowSize);
+		glVertex2f(windowSize - 0.1, windowSize);
 		glVertex2f(windowSize, windowSize);
 
 		

@@ -1,4 +1,8 @@
 #pragma once
+
+#ifndef _GLOBAL_H_
+#define _GLOBAL_H_
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <gl/glut.h>
@@ -7,54 +11,42 @@
 #include <ctime>
 #include <vector>
 #include "mydraw.h"
+#include "Action.h"
+#include "GenerateMap.h"
 
 #define BITMAP_ID 0x4D42
 
 using namespace std;
 
-struct CAMERA   /*ÓÃÓÚÉãÏñ»ú¶¨Î»*/
-{
+//struct CAMERA   /*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»*/
+/*{
 	GLfloat xeye;
 	GLfloat yeye;
 	GLfloat zeye;
 };
-struct CAMERA  camera = { 2, 0, 0 };
+struct CAMERA  camera = { 2, 0, 0 };*/
 
-struct POLAR
+/*struct POLAR
 {
-	float r;            //¾àÀër
-	float alpha;     //Ë®Æ½Æ«½Ç¦Á
-	float fy;          //ÊúÖ±Æ«½Ç¦Õ£¨µ¥Î»¾ùÓÃ½Ç¶È£©
+	float r;            //ï¿½ï¿½ï¿½ï¿½r
+	float alpha;     //Ë®Æ½Æ«ï¿½Ç¦ï¿½
+	float fy;          //ï¿½ï¿½Ö±Æ«ï¿½Ç¦Õ£ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½Ã½Ç¶È£ï¿½
 };
 
-struct POLAR  polar = { 40.0f, 90, 90 };
+struct POLAR  polar = { 40.0f, 90, 90 };*/
 
-GLint centerPoint[] = { 0, 0 };
-GLint previousPoint[] = { 0, 0 };
+#include "gl/glut.h"
+#define FloorTexIndex 0
 
-GLfloat initPos[] = { 0, 0, 0 };
-GLfloat initScale[] = { 0.3, 0.3, 0.3 };
 
-GLsizei initialSize[] = { 1200, 600 };
+extern mydraw objList;
 
-float fTranslate;
-float fRotate;
-GLfloat m_PosX = 15;
-GLfloat m_PosY = 10;
-GLfloat m_PosZ = 15;
-GLsizei currentSize[2] = { 0, 0 };
-bool bshow = false;
-bool lightOn = false;
+extern GLint myObjList[10];
+extern GLint mapList;
+extern GLint wallList;
+extern GLint singleLineList;
+extern GLint singleColumnList;
+extern GLuint Tex[20];
+extern int texindex;
 
-GLint lightS = 0;
-
-//GLint bList = 0;
-
-GLint wallList = 0;
-GLint singleLineList = 0;
-GLint singleColumnList = 0;
-
-GLuint Tex[20];
-int texindex = 0;
-
-mydraw objList;
+#endif // _GLOBAL_H_

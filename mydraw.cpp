@@ -7,7 +7,7 @@ mydraw::mydraw()
 	for (int i = 0; i < ElementNum; i++)
 	{
 		objLoader* newObjLoader = new objLoader();
-		obj.push_back(newObjLoader);
+		obj.push_back(make_pair(newObjLoader,0));
 	}
 }
 
@@ -21,6 +21,12 @@ void mydraw::loadElement(int num)
 	string filename;
 	switch (num)
 	{
+	case -1:
+		filename = "wall.obj";
+		break;
+	case 100:
+		filename = "man.obj";
+		break;
 	case 0:
 		filename = "road.obj";
 		break;
@@ -28,37 +34,50 @@ void mydraw::loadElement(int num)
 		filename = "cat.obj";
 		break;
 	case 2:
-		filename = "door.obj";
-		break;
-	case 3:
 		filename = "deer.obj";
 		break;
+	case 3:
+		filename = "house.obj";
+		break;
 	case 4:
-		filename = "palmtree.obj";
+		filename = "12281_Container_v2_L2.obj";
 		break;
 	case 5:
-		filename = "rose.obj";
+		filename = "Rock1.obj";
 		break;
 	case 6:
-		filename = "pinetree.obj";
+		filename = "rose.obj";
 		break;
 	case 7:
-		filename = "oaktree.obj";
+		filename = "tree1.obj";
 		break;
 	case 8:
-		filename = "followball.obj";
+		filename = "tree2.obj";
 		break;
 	case 9:
-		filename = "rock1.obj";
+		filename = "well_OBJ.obj";
+		break;
+	case 10:
+		filename = "wood.obj";
+		break;
 	}
 	// load file
-	objLoader* curObjLoader = obj[num];
-	curObjLoader->load(filename);
+	objLoader* curObjLoader = obj[num].first;
+	curObjLoader->load("assets/"+filename);
+
+	GLint lid = glGenLists(1);
+	glNewList(lid, GL_COMPILE);
+	glPushMatrix();
+	glScalef(0.05, 0.05, 0.05);
+	curObjLoader->draw();
+	glPopMatrix();
+	glEndList();
+
+	obj[num].second = lid;
 }
 
 void mydraw::drawElement(int num)
 {
-	objLoader* curObjLoader = obj[num];
-	curObjLoader->draw();
+	glCallList(obj[num].second);
 }
 

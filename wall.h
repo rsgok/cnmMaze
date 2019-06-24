@@ -5,32 +5,30 @@
 #include <gl/glut.h>
 #include "texture.h"
 
-class Wall{
+class Wall {
 private:
-	GLint type = 1;//Á½¸ö·½ÏòµÄÇ½
+	GLint type = 1;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç½
 	GLfloat posX = 0;
 	GLfloat posZ = 0;
 	GLfloat length = 1;
 	GLfloat thickness = 0.1;
-	GLfloat height = 1;
+	GLfloat height = 2;
 	GLuint * wallTex = (GLuint*)malloc(sizeof(GLuint));
 public:
 	~Wall() {}
 
-	Wall(GLfloat posx = 0, GLfloat posz = 0, GLfloat type = 1){
-		this->type = type;
+	Wall(GLfloat posx = 0, GLfloat posz = 0, GLfloat Type = 1) {
+		type = Type;
 		posX = posx;
 		posZ = posz;
 	}
 
-	void DrawWall(){
-		texload(wallTex, (char*)"wall.bmp");
+	void DrawWall() {
+		texload(wallTex, (char*)"images/wall.bmp");
 		glPushMatrix();
 		glTranslatef(posX, 0, posZ);
-
 		if (type != 1)
 			glRotatef(90, 0, 1, 0);
-
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, *wallTex);
 

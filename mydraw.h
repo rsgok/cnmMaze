@@ -1,12 +1,12 @@
 #pragma once
 #include "objLoader.h"
 
-#define ElementNum 10
+#define ElementNum 15
 
 class mydraw
 {
 public:
-	vector<objLoader*> obj;
+	vector<pair<objLoader*,int>> obj;
 	mydraw();
 	~mydraw();
 	void loadElement(int num);

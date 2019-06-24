@@ -41,8 +41,13 @@ void objLoader::load(string filename)
 			}
 		}
 		else if (s[0] == 'f') {
-			for (int k = s.size() - 1; k >= 0; k--) {
-				if (s[k] == '/')s[k] = ' ';
+			for (int k = 0; k<= s.size() - 1; k++) {
+				if (s[k] == '/') { s[k] = ' '; 
+				if(s[k+1]=='/')
+					s.insert(k+1, "0");
+				if (s[k - 1] == ' ')
+					s.insert(k + 1, "0");
+				}
 			}
 			istringstream in(s);
 			f = new Face();
@@ -75,20 +80,25 @@ void objLoader::load(string filename)
 
 void objLoader::draw()
 {
-	glBegin(GL_TRIANGLES);							// »æÖÆÈý½ÇÐÎ
+	glPushMatrix();
+	glTranslated(0,0,0);
+	glBegin(GL_TRIANGLES);	
+
+	glColor3f(1.0, 0, 0);// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	for (int i = 0; i < F.size(); i++)
 	{
-		//if (VT.size() != 0)glTexCoord2f(VT[F[i].T[0]].tu, VT[F[i].T[0]].tv);  //ÎÆÀí	
-		//if (VN.size() != 0)glNormal3f(VN[F[i].N[0]].nx, VN[F[i].N[0]].ny, VN[F[i].N[0]].nz);//·¨ÏòÁ¿
-		glVertex3f(V[F[i].V[0]].x, V[F[i].V[0]].y, V[F[i].V[0]].z);		// ÉÏ¶¥µã
+		//if (VT.size() != 0)glTexCoord2f(VT[F[i].T[0]].tu, VT[F[i].T[0]].tv);  //ï¿½ï¿½ï¿½ï¿½	
+		//if (VN.size() != 0)glNormal3f(VN[F[i].N[0]].nx, VN[F[i].N[0]].ny, VN[F[i].N[0]].nz);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		glVertex3f(V[F[i].V[0]].x, V[F[i].V[0]].y, V[F[i].V[0]].z);		// ï¿½Ï¶ï¿½ï¿½ï¿½
 
-		//if (VT.size() != 0)glTexCoord2f(VT[F[i].T[1]].tu, VT[F[i].T[1]].tv);  //ÎÆÀí
-		//if (VN.size() != 0)glNormal3f(VN[F[i].N[1]].nx, VN[F[i].N[1]].ny, VN[F[i].N[1]].nz);//·¨ÏòÁ¿
-		glVertex3f(V[F[i].V[1]].x, V[F[i].V[1]].y, V[F[i].V[1]].z);		// ×óÏÂ
+		//if (VT.size() != 0)glTexCoord2f(VT[F[i].T[1]].tu, VT[F[i].T[1]].tv);  //ï¿½ï¿½ï¿½ï¿½
+		//if (VN.size() != 0)glNormal3f(VN[F[i].N[1]].nx, VN[F[i].N[1]].ny, VN[F[i].N[1]].nz);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		glVertex3f(V[F[i].V[1]].x, V[F[i].V[1]].y, V[F[i].V[1]].z);		// ï¿½ï¿½ï¿½ï¿½
 
-		//if (VT.size() != 0)glTexCoord2f(VT[F[i].T[2]].tu, VT[F[i].T[2]].tv);  //ÎÆÀí
-		//if (VN.size() != 0)glNormal3f(VN[F[i].N[2]].nx, VN[F[i].N[2]].ny, VN[F[i].N[2]].nz);//·¨ÏòÁ¿
-		glVertex3f(V[F[i].V[2]].x, V[F[i].V[2]].y, V[F[i].V[2]].z);		// ÓÒÏÂ
+		//if (VT.size() != 0)glTexCoord2f(VT[F[i].T[2]].tu, VT[F[i].T[2]].tv);  //ï¿½ï¿½ï¿½ï¿½
+		//if (VN.size() != 0)glNormal3f(VN[F[i].N[2]].nx, VN[F[i].N[2]].ny, VN[F[i].N[2]].nz);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		glVertex3f(V[F[i].V[2]].x, V[F[i].V[2]].y, V[F[i].V[2]].z);		// ï¿½ï¿½ï¿½ï¿½
 	}
-	glEnd();										// Èý½ÇÐÎ»æÖÆ½áÊø	
+	glEnd();										// ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½Æ½ï¿½ï¿½ï¿½	
+	glPopMatrix();
 }
