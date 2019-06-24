@@ -27,7 +27,7 @@ bool SnapScreen(int width, int height){
 
 	saveFile = saveFile + buf[1] + buf[2] + buf[3] + "-" + buf[4] + ".bmp";
 	char* file = (char *)saveFile.c_str();
-
+	typedef unsigned char byte;
 	byte *image;
 	FILE *fp;
 	BITMAPFILEHEADER FileHeader;
