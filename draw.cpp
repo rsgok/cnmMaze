@@ -62,6 +62,19 @@ void draw::loadElement(int num) {
 	std::cout << "[LoadOBJ] # of shapes in .obj : " << shapes.size() << std::endl;
 	std::cout << "[LoadOBJ] # of materials in .obj : " << materials.size() << std::endl;
 
+/*	GLfloat mat_t1[] = { 0.6f, 0.6f, 0.6f, 1.0f };
+	GLfloat mat_t2[] = { 0.85f, 0.65f, 0.2f, 1.0f };
+	GLfloat mat_t3[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+	// 设置多边形正面的镜面反射属性
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_t1);
+	//设置多边形正面漫反射属性
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_t2);
+	// 指定镜面指数
+	glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 0);
+	//glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mat_t3);
+	glShadeModel(GL_SMOOTH);           //多变性填充模式
+
+	*/
 
 	GLint lid = glGenLists(1);
 	glNewList(lid, GL_COMPILE);

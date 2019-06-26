@@ -111,7 +111,7 @@ void Action::MoveAction(const MazeMap &Mmap)
 	//Jmp
 
 	M_x = player.x, M_y = player.y, M_z = player.z;
-	if (jmp_x > 0)
+	if (jmp_x > -0.5)
 	{
 		player.z -= 4 * (jmp_x - jmp_x * jmp_x);
 		jmp_x = max(0, jmp_x - jmp_g);

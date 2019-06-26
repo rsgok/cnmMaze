@@ -18,6 +18,7 @@ int MainWindow;//������
 int MapWindow_min; //��ͼ����(С
 int MapWindow_max; //��ͼ����(��
 bool MapFlag = 0; //0:С��ͼ  1:���ͼ
+bool spotlightBool = true;
 
 int basicSceneList;
 
@@ -57,6 +58,9 @@ void KeyAction(unsigned char k, int x, int y)
 		act.player.setViewFlag();
 		if(act.player.CamFlag()) act.player.vr =8;
 		else act.player.vr = 1;
+		break;
+	case 'm':
+		spotlightBool = !spotlightBool;
 		break;
 	case ' ':
 		act.jmp();
@@ -108,27 +112,27 @@ void MouseClick(int button, int state, int x, int y)
 
 
 void DrawObjs(int i) {
+	glEnable(GL_TEXTURE_2D);
+	if(i>0&&i<11)
+		glBindTexture(GL_TEXTURE_2D, Tex[i]);
+	else if(i==100)
+		glBindTexture(GL_TEXTURE_2D, Tex[7]);
+	else if(i==0)
+		glBindTexture(GL_TEXTURE_2D, Tex[8]);
+	else if(i==-1)
+		glBindTexture(GL_TEXTURE_2D, Tex[9]);
 	glPushMatrix();
 	glScalef(0.042, 0.042, 0.042);
 	//glRotatef(0, 0, 90,0);
 	objDraw.drawElement(i);
 	glPopMatrix();
+	glDisable(GL_TEXTURE_2D);
 }
 
 void DrawMap() {
 	int x = mazemap.sizeX, y = mazemap.sizeY*mazemap.sizeNum;
 	for (int i = 0; i < x; ++i) {
 		for (int j = 0; j < y; ++j) {
-			glBegin(GL_LINES);
-			glVertex3f(j, 0, i);
-			glVertex3f(j, 0, i + 1);
-			glVertex3f(j, 0, i);
-			glVertex3f(j + 1, 0, i);
-			glVertex3f(j + 1, 0, i + 1);
-			glVertex3f(j + 1, 0, i);
-			glVertex3f(j + 1, 0, i + 1);
-			glVertex3f(j, 0, i + 1);
-			glEnd();
 			int n = mazemap[i][j];
 			if (n >= 0&&act.InView(i,j)) 
 			{
@@ -182,13 +186,39 @@ void redrawMain(Action act, const MazeMap &Map)
 
 	//�ƹ�
 	
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_LIGHTING);
-	GLfloat white[] = { 0.1, 0.1, 0.1, 1.0 };
-	GLfloat light_pos[] = { 5,5,5,-1 };
-	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+
+	
+	GLfloat white[] = { 1, 1, 1, 1.0 };
 	glLightfv(GL_LIGHT0, GL_AMBIENT, white);
-	glEnable(GL_LIGHT0);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, white);
+
+	GLfloat position[] = { 0,10,0 };
+
+	GLfloat lightDir[] = {0,0,0};
+	glLightfv(GL_LIGHT0, GL_POSITION, position);
+	glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 15.0);             //裁减角度
+	glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, lightDir);          //光源方向
+	glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 5.0);
+
+	glLightfv(GL_LIGHT1, GL_AMBIENT, white);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, white);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, white);
+	glLightfv(GL_LIGHT1, GL_POSITION, position);
+
+	
+	if (!spotlightBool)
+	{
+		//聚集度
+		glDisable(GL_LIGHT1);
+		glEnable(GL_LIGHT0);
+	}
+	else
+	{
+
+		glEnable(GL_LIGHT1);
+		glDisable(GL_LIGHT0);
+	}
 	//��������
 	glCallList(basicSceneList);
 	if (act.player.CamFlag() == 0)
@@ -220,6 +250,23 @@ void redraw()
 	MiniMap::redrawMap(act,mazemap);
 	glutSetWindow(MainWindow);
 }
+void init(void)
+{
+	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };  //镜面反射参数
+	GLfloat mat_shininess[] = { 50.0 };               //高光指数
+
+	GLfloat white_light[] = { 1.0, 1.0, 1.0, 1.0 };   //灯位置(1,1,1), 最后1-开关
+	GLfloat Light_Model_Ambient[] = { 0.8 , 0.2 , 0.2 , 1.0 }; //环境光参数
+	GLfloat light_position[] = { 3.0, 3.0, 3.0, 0.0 };
+
+	glEnable(GL_LIGHTING);   //开关:使用光
+	glEnable(GL_DEPTH_TEST); //打开深度测试
+
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -231,7 +278,7 @@ int main(int argc, char *argv[])
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowPosition(0, 0);
 	glutInitWindowSize(InitWidth,InitHeight);
-
+	
 	//������
 	MainWindow = glutCreateWindow("MAZE!");
 	//��ͼ
@@ -247,6 +294,7 @@ int main(int argc, char *argv[])
 
 	basicSceneList = game.drawScene();
 
+
 	//���
 	glutSetCursor(GLUT_CURSOR_NONE);
 	glutPassiveMotionFunc(MouseAction);
@@ -259,7 +307,7 @@ int main(int argc, char *argv[])
 	glutIdleFunc(idle);
 
 	//��ͼ����
-
+	init();
 	MapWindow_min = glutCreateSubWindow(MainWindow, InitWidth - min(InitWidth, InitHeight) / 6, InitHeight - min(InitWidth, InitHeight) / 6, 
 										min(InitWidth, InitHeight) / 6, min(InitWidth, InitHeight) / 6);
 
